@@ -5,8 +5,6 @@ services:
     volumes:
       - wallet-${NETWORK}-db:/wallet-db
       - ${PATH_TO_SOCKET}:/ipc
-    ports:
-      - 8090:8090
     entrypoint: []
     command: bash -c "
         ([[ $$NETWORK == \"mainnet\" ]] && $$CMD --mainnet) ||
@@ -32,8 +30,6 @@ services:
       POSTGRES_PASSWORD: "${POSTGRES_DB_PASS}"
       POSTGRES_DB: "transactions-proxy-db"
       PGDATA: "/var/lib/postgresql/data/pgdata"
-    ports:
-      - 5436:5432
     volumes:
       - ${PATH_TO_DATABASE}:/var/lib/postgresql/data/pgdata
     healthcheck:
@@ -52,8 +48,6 @@ services:
       SERVER_PORT: "5300"
       CONFIG_PATH: "/etc/token-lib-cnode/config.json"
       CARDANO_WALLET_URL: "http://cardano-wallet:8090"
-    ports:
-      - 5300:5300
     volumes:
       - cardano-wallet-backend-data-${NETWORK}:/data
       - ./config.json:/etc/token-lib-cnode/config.json
@@ -65,7 +59,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
     environment:
-      SERVER_PORT: "5301"
+      SERVER_PORT: "${SERVER_PORT}"
       CNODE_ADDRESS: "wallet-lib:5300"
       POSTGRES_DB_HOST: "postgres"
       POSTGRES_DB_PORT: "5432"
@@ -73,7 +67,7 @@ services:
       POSTGRES_DB_PASS: "${POSTGRES_DB_PASS}"
       POSTGRES_DB_NAME: "transactions-proxy-db"
     ports:
-      - 5301:5301
+      - ${SERVER_PORT}:${SERVER_PORT}
 
   web3-front:
     image: hub.oxisoft.io/web3-front:latest
