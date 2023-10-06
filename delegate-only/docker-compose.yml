@@ -1,0 +1,9 @@
+version: '3'
+services:
+  web3-front:
+    image: hub.oxisoft.io/web3-front:latest
+    command: /bin/sh -c "/nginx_entrypoint.sh;nginx -g 'daemon off;'"
+    env_file:
+      - .env.local
+    ports:
+      - '${PORT}:80'

@@ -60,21 +60,24 @@ services:
     restart: unless-stopped
     environment:
       SERVER_PORT: "${SERVER_PORT}"
-      CNODE_ADDRESS: "wallet-lib:5300"
+      CNODE_ADDRESS: "cardano-wallet-backend:5300"
       POSTGRES_DB_HOST: "postgres"
       POSTGRES_DB_PORT: "5432"
       POSTGRES_DB_USER: "${POSTGRES_DB_USER}"
       POSTGRES_DB_PASS: "${POSTGRES_DB_PASS}"
       POSTGRES_DB_NAME: "transactions-proxy-db"
+      POOLS: "${POOLS}"
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
 
   web3-front:
     image: hub.oxisoft.io/web3-front:latest
     command: /bin/sh -c "/nginx_entrypoint.sh;nginx -g 'daemon off;'"
-    environment:
-      BACKEND_URL_KEY: "${BACKEND_URL_KEY}"
-      WALLET_NETWORK_KEY: "${NETWORK}"
+    env_file:
+      - .env.local
+    # environment:
+    #   BACKEND_URL_KEY: "${BACKEND_URL_KEY}"
+    #   WALLET_NETWORK_KEY: "${NETWORK}"
     ports:
       - '${PORT}:80'
 
